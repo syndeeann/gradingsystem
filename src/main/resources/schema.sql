@@ -30,10 +30,10 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- TABLE: roles
 -- =============================================================================
 CREATE TABLE roles (
-    id          INT UNSIGNED    NOT NULL AUTO_INCREMENT,
+    id          TINYINT UNSIGNED    NOT NULL AUTO_INCREMENT,
     name        VARCHAR(20)         NOT NULL,
     description VARCHAR(255)        NOT NULL DEFAULT '',
-    is_active   INT(1)          NOT NULL DEFAULT 1,
+    is_active   TINYINT(1)          NOT NULL DEFAULT 1,
     PRIMARY KEY (id),
     UNIQUE KEY uq_roles_name (name),
     CONSTRAINT chk_roles_name CHECK (name IN ('ADMIN', 'TEACHER', 'STUDENT', 'REGISTRAR', 'SECRETARY'))
@@ -59,7 +59,7 @@ CREATE TABLE permissions (
 -- TABLE: role_permissions  (join table)
 -- =============================================================================
 CREATE TABLE role_permissions (
-    role_id       INT UNSIGNED    NOT NULL,
+    role_id       TINYINT UNSIGNED    NOT NULL,
     permission_id SMALLINT UNSIGNED   NOT NULL,
     PRIMARY KEY (role_id, permission_id),
     INDEX idx_role_permissions_permission_id (permission_id),
@@ -71,13 +71,13 @@ CREATE TABLE role_permissions (
 -- TABLE: users
 -- =============================================================================
 CREATE TABLE users (
-    id            VARCHAR(36)        NOT NULL,
+    id            CHAR(36)        NOT NULL,
     username      VARCHAR(50)     NOT NULL,
     email         VARCHAR(150)    NOT NULL,
     password_hash VARCHAR(255)    NOT NULL,
     full_name     VARCHAR(150)    NOT NULL,
-    role_id       INT UNSIGNED NOT NULL,
-    is_active     INT(1)      NOT NULL DEFAULT 1,
+    role_id       TINYINT UNSIGNED NOT NULL,
+    is_active     TINYINT(1)      NOT NULL DEFAULT 1,
     created_at    DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at    DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     last_login    DATETIME                 DEFAULT NULL,
@@ -97,8 +97,8 @@ CREATE TABLE subjects (
     code        VARCHAR(20)     NOT NULL,
     name        VARCHAR(150)    NOT NULL,
     description TEXT                     DEFAULT NULL,
-    units       INT UNSIGNED NOT NULL DEFAULT 3,
-    is_active   INT(1)      NOT NULL DEFAULT 1,
+    units       TINYINT UNSIGNED NOT NULL DEFAULT 3,
+    is_active   TINYINT(1)      NOT NULL DEFAULT 1,
     PRIMARY KEY (id),
     UNIQUE KEY uq_subjects_code (code),
     INDEX idx_subjects_is_active (is_active)
@@ -110,14 +110,14 @@ CREATE TABLE subjects (
 CREATE TABLE schedules (
     id          INT UNSIGNED        NOT NULL AUTO_INCREMENT,
     subject_id  INT UNSIGNED        NOT NULL,
-    teacher_id  VARCHAR(36)         NOT NULL,
+    teacher_id  CHAR(36)            NOT NULL,
     room        VARCHAR(50)         NOT NULL DEFAULT '',
     day_of_week VARCHAR(30)         NOT NULL,
     time_start  TIME                NOT NULL,
     time_end    TIME                NOT NULL,
-    semester    INT UNSIGNED    NOT NULL COMMENT '1=First, 2=Second, 3=Summer',
+    semester    TINYINT UNSIGNED    NOT NULL COMMENT '1=First, 2=Second, 3=Summer',
     school_year VARCHAR(9)          NOT NULL COMMENT 'e.g. 2025-2026',
-    is_active   INT(1)          NOT NULL DEFAULT 1,
+    is_active   TINYINT(1)          NOT NULL DEFAULT 1,
     PRIMARY KEY (id),
     INDEX idx_schedules_subject_id  (subject_id),
     INDEX idx_schedules_teacher_id  (teacher_id),
@@ -134,7 +134,7 @@ CREATE TABLE schedules (
 -- =============================================================================
 CREATE TABLE student_schedules (
     id               INT UNSIGNED    NOT NULL AUTO_INCREMENT,
-    student_id       VARCHAR(36)        NOT NULL,
+    student_id       CHAR(36)        NOT NULL,
     schedule_id      INT UNSIGNED    NOT NULL,
     enrollment_date  DATE            NOT NULL DEFAULT (CURRENT_DATE),
     status           VARCHAR(10)     NOT NULL DEFAULT 'ENROLLED',
@@ -156,7 +156,7 @@ CREATE TABLE grades (
     student_schedule_id  INT UNSIGNED    NOT NULL,
     grade_value          DECIMAL(5,2)    NOT NULL,
     remarks              VARCHAR(255)             DEFAULT NULL,
-    recorded_by          VARCHAR(36)        NOT NULL,
+    recorded_by          CHAR(36)        NOT NULL,
     recorded_at          DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at           DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
@@ -172,11 +172,11 @@ CREATE TABLE grades (
 -- TABLE: honor_thresholds
 -- =============================================================================
 CREATE TABLE honor_thresholds (
-    id         INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    id         TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
     label      VARCHAR(50)      NOT NULL,
     min_grade  DECIMAL(5,2)     NOT NULL,
     max_grade  DECIMAL(5,2)     NOT NULL,
-    is_active  INT(1)       NOT NULL DEFAULT 1,
+    is_active  TINYINT(1)       NOT NULL DEFAULT 1,
     created_at DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     UNIQUE KEY uq_honor_label (label),
@@ -297,24 +297,25 @@ SELECT 5, id FROM permissions WHERE action IN ('READ','VIEW_PAGE')
 -- ----------------------------------------------------------------------------
 -- Users
 -- Passwords are bcrypt hashes of 'Password@123' (cost 12) — replace in prod.
+-- Hash verified: $2b$12$bysxkBQVfAyAIqm4f2TDuOaYF/V2GTiIZ8qgZjcSPl/z1nU3izQz2
 -- ----------------------------------------------------------------------------
 INSERT INTO users (id, username, email, password_hash, full_name, role_id, is_active) VALUES
 -- Admins (2)
-('a0000001-0000-0000-0000-000000000001', 'admin1',       'admin1@school.edu',       '$2a$12$KIXfHbzdYNMNvT5EzJJBDeTGODdGRD3zHPdGM2Yks6lD7/qWVBiSa', 'Alice Administrator',  1, 1),
-('a0000001-0000-0000-0000-000000000002', 'admin2',       'admin2@school.edu',       '$2a$12$KIXfHbzdYNMNvT5EzJJBDeTGODdGRD3zHPdGM2Yks6lD7/qWVBiSa', 'Bob Administrator',    1, 1),
+('a0000001-0000-0000-0000-000000000001', 'admin1',       'admin1@school.edu',       '$2b$12$bysxkBQVfAyAIqm4f2TDuOaYF/V2GTiIZ8qgZjcSPl/z1nU3izQz2', 'Alice Administrator',  1, 1),
+('a0000001-0000-0000-0000-000000000002', 'admin2',       'admin2@school.edu',       '$2b$12$bysxkBQVfAyAIqm4f2TDuOaYF/V2GTiIZ8qgZjcSPl/z1nU3izQz2', 'Bob Administrator',    1, 1),
 -- Teachers (2)
-('t0000001-0000-0000-0000-000000000001', 'teacher1',     'teacher1@school.edu',     '$2a$12$KIXfHbzdYNMNvT5EzJJBDeTGODdGRD3zHPdGM2Yks6lD7/qWVBiSa', 'Carlos Reyes',         2, 1),
-('t0000001-0000-0000-0000-000000000002', 'teacher2',     'teacher2@school.edu',     '$2a$12$KIXfHbzdYNMNvT5EzJJBDeTGODdGRD3zHPdGM2Yks6lD7/qWVBiSa', 'Diana Santos',         2, 1),
+('t0000001-0000-0000-0000-000000000001', 'teacher1',     'teacher1@school.edu',     '$2b$12$bysxkBQVfAyAIqm4f2TDuOaYF/V2GTiIZ8qgZjcSPl/z1nU3izQz2', 'Carlos Reyes',         2, 1),
+('t0000001-0000-0000-0000-000000000002', 'teacher2',     'teacher2@school.edu',     '$2b$12$bysxkBQVfAyAIqm4f2TDuOaYF/V2GTiIZ8qgZjcSPl/z1nU3izQz2', 'Diana Santos',         2, 1),
 -- Registrar (1)
-('r0000001-0000-0000-0000-000000000001', 'registrar1',   'registrar1@school.edu',   '$2a$12$KIXfHbzdYNMNvT5EzJJBDeTGODdGRD3zHPdGM2Yks6lD7/qWVBiSa', 'Elena Cruz',           4, 1),
+('r0000001-0000-0000-0000-000000000001', 'registrar1',   'registrar1@school.edu',   '$2b$12$bysxkBQVfAyAIqm4f2TDuOaYF/V2GTiIZ8qgZjcSPl/z1nU3izQz2', 'Elena Cruz',           4, 1),
 -- Secretary (1)
-('s0000001-0000-0000-0000-000000000001', 'secretary1',   'secretary1@school.edu',   '$2a$12$KIXfHbzdYNMNvT5EzJJBDeTGODdGRD3zHPdGM2Yks6lD7/qWVBiSa', 'Fernando Lim',         5, 1),
+('s0000001-0000-0000-0000-000000000001', 'secretary1',   'secretary1@school.edu',   '$2b$12$bysxkBQVfAyAIqm4f2TDuOaYF/V2GTiIZ8qgZjcSPl/z1nU3izQz2', 'Fernando Lim',         5, 1),
 -- Students (5)
-('u0000001-0000-0000-0000-000000000001', 'student1',     'student1@school.edu',     '$2a$12$KIXfHbzdYNMNvT5EzJJBDeTGODdGRD3zHPdGM2Yks6lD7/qWVBiSa', 'Grace Tan',            3, 1),
-('u0000001-0000-0000-0000-000000000002', 'student2',     'student2@school.edu',     '$2a$12$KIXfHbzdYNMNvT5EzJJBDeTGODdGRD3zHPdGM2Yks6lD7/qWVBiSa', 'Henry Uy',             3, 1),
-('u0000001-0000-0000-0000-000000000003', 'student3',     'student3@school.edu',     '$2a$12$KIXfHbzdYNMNvT5EzJJBDeTGODdGRD3zHPdGM2Yks6lD7/qWVBiSa', 'Iris Bautista',        3, 1),
-('u0000001-0000-0000-0000-000000000004', 'student4',     'student4@school.edu',     '$2a$12$KIXfHbzdYNMNvT5EzJJBDeTGODdGRD3zHPdGM2Yks6lD7/qWVBiSa', 'James Flores',         3, 1),
-('u0000001-0000-0000-0000-000000000005', 'student5',     'student5@school.edu',     '$2a$12$KIXfHbzdYNMNvT5EzJJBDeTGODdGRD3zHPdGM2Yks6lD7/qWVBiSa', 'Karen Dela Cruz',      3, 1);
+('u0000001-0000-0000-0000-000000000001', 'student1',     'student1@school.edu',     '$2b$12$bysxkBQVfAyAIqm4f2TDuOaYF/V2GTiIZ8qgZjcSPl/z1nU3izQz2', 'Grace Tan',            3, 1),
+('u0000001-0000-0000-0000-000000000002', 'student2',     'student2@school.edu',     '$2b$12$bysxkBQVfAyAIqm4f2TDuOaYF/V2GTiIZ8qgZjcSPl/z1nU3izQz2', 'Henry Uy',             3, 1),
+('u0000001-0000-0000-0000-000000000003', 'student3',     'student3@school.edu',     '$2b$12$bysxkBQVfAyAIqm4f2TDuOaYF/V2GTiIZ8qgZjcSPl/z1nU3izQz2', 'Iris Bautista',        3, 1),
+('u0000001-0000-0000-0000-000000000004', 'student4',     'student4@school.edu',     '$2b$12$bysxkBQVfAyAIqm4f2TDuOaYF/V2GTiIZ8qgZjcSPl/z1nU3izQz2', 'James Flores',         3, 1),
+('u0000001-0000-0000-0000-000000000005', 'student5',     'student5@school.edu',     '$2b$12$bysxkBQVfAyAIqm4f2TDuOaYF/V2GTiIZ8qgZjcSPl/z1nU3izQz2', 'Karen Dela Cruz',      3, 1);
 
 -- ----------------------------------------------------------------------------
 -- Subjects (3)
@@ -373,7 +374,7 @@ INSERT INTO honor_thresholds (label, min_grade, max_grade, is_active) VALUES
 -- =============================================================================
 CREATE TABLE audit_log (
     id         BIGINT UNSIGNED  NOT NULL AUTO_INCREMENT,
-    user_id    VARCHAR(36)         NULL COMMENT 'NULL for system-initiated actions',
+    user_id    CHAR(36)         NULL COMMENT 'NULL for system-initiated actions',
     action     VARCHAR(50)      NOT NULL,
     entity     VARCHAR(50)      NOT NULL,
     entity_id  VARCHAR(36)      NULL,

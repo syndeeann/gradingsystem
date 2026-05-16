@@ -1,0 +1,16 @@
+# Maven
+target/
+
+# IntelliJ / VS Code
+.idea/
+*.iml
+.vscode/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+
+# Spring Boot
+application-local.properties

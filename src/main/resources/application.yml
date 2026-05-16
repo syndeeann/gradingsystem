@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: grading-system
+
+  datasource:
+    url: jdbc:mariadb://localhost:3306/gradingsystem
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+    driver-class-name: org.mariadb.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDBDialect
+        format_sql: true
+        use_sql_comments: true
+    open-in-view: false
+
+  mvc:
+    # Enables RFC 7807 ProblemDetail format for built-in Spring MVC exceptions
+    problemdetails:
+      enabled: true
+
+server:
+  port: 8080
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:default-dev-secret-minimum-256-bits-long-change-in-production-now}
+    expiration: 86400000  # 24 hours in milliseconds
+  cors:
+    allowed-origins:
+      - http://localhost:5173
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+  packages-to-scan: com.gradingsystem.controller
